@@ -280,6 +280,9 @@ showComments(BuildContext context,
     {String postId, String ownerId, String mediaUrl}) {
   Navigator.push(context, MaterialPageRoute(builder: (context) {
     return Comments(
-        postId: postId, postOwnerId: ownerId, postMediaUrl: mediaUrl);
+      postId: postId,
+      postOwnerId: ownerId,
+      postMediaUrl: mediaUrl,
+    );
   }));
 }
