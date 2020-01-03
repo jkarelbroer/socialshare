@@ -7,6 +7,7 @@ import 'package:fluttershare/widgets/progress.dart';
 
 class EditProfile extends StatefulWidget {
   final String currentUserId;
+
   EditProfile({this.currentUserId});
 
   @override
@@ -14,13 +15,13 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController displayNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   bool isLoading = false;
   User user;
+  bool _displayNameValid = true;
   bool _bioValid = true;
-  bool _displaynameValid = true;
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -41,23 +42,23 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
-  Column buildDisplaynameField() {
+  Column buildDisplayNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
             padding: EdgeInsets.only(top: 12.0),
             child: Text(
-              'Display name',
+              "Display Name",
               style: TextStyle(color: Colors.grey),
             )),
         TextField(
           controller: displayNameController,
           decoration: InputDecoration(
-            hintText: 'Update displayname',
-            errorText: _displaynameValid ? null : 'Displayname too short',
+            hintText: "Update Display Name",
+            errorText: _displayNameValid ? null : "Display Name too short",
           ),
-        ),
+        )
       ],
     );
   }
@@ -67,22 +68,42 @@ class _EditProfileState extends State<EditProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-            padding: EdgeInsets.only(top: 12.0),
-            child: Text(
-              'Bio',
-              style: TextStyle(color: Colors.grey),
-            )),
-        TextField(
-          controller: bioController,
-          minLines: 3,
-          maxLines: 5,
-          decoration: InputDecoration(
-            hintText: 'Write something interesting about you.',
-            errorText: _bioValid ? null : '200 characters maximum allowed',
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            "Bio",
+            style: TextStyle(color: Colors.grey),
           ),
         ),
+        TextField(
+          controller: bioController,
+          decoration: InputDecoration(
+            hintText: "Update Bio",
+            errorText: _bioValid ? null : "Bio too long",
+          ),
+        )
       ],
     );
+  }
+
+  updateProfileData() {
+    setState(() {
+      displayNameController.text.trim().length < 3 ||
+              displayNameController.text.isEmpty
+          ? _displayNameValid = false
+          : _displayNameValid = true;
+      bioController.text.trim().length > 100
+          ? _bioValid = false
+          : _bioValid = true;
+    });
+
+    if (_displayNameValid && _bioValid) {
+      usersRef.document(widget.currentUserId).updateData({
+        "displayName": displayNameController.text,
+        "bio": bioController.text,
+      });
+      SnackBar snackbar = SnackBar(content: Text("Profile updated!"));
+      _scaffoldKey.currentState.showSnackBar(snackbar);
+    }
   }
 
   logout() async {
@@ -90,31 +111,8 @@ class _EditProfileState extends State<EditProfile> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
-  updateProfileData() {
-    setState(() {
-      displayNameController.text.trim().length < 4 ||
-              displayNameController.text.isEmpty
-          ? _displaynameValid = false
-          : _displaynameValid = true;
-      bioController.text.trim().length > 200
-          ? _bioValid = false
-          : _bioValid = true;
-    });
-
-    if (_displaynameValid && _bioValid) {
-      usersRef.document(widget.currentUserId).updateData({
-        'displayName': displayNameController.text,
-        'bio': bioController.text
-      });
-
-      //TIP: Quick snackbar code
-      SnackBar snackbar = SnackBar(content: Text('Profile updated'));
-      _scaffoldKey.currentState.showSnackBar(snackbar);
-    }
-  }
-
   @override
-  Scaffold build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       floatingActionButton: FloatingActionButton(
@@ -124,15 +122,19 @@ class _EditProfileState extends State<EditProfile> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          'Edit profile',
-          style: TextStyle(color: Colors.black),
+          "Edit Profile",
+          style: TextStyle(
+            color: Colors.black,
+          ),
         ),
         actions: <Widget>[
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.done),
-            iconSize: 30.0,
-            color: Colors.green,
+            icon: Icon(
+              Icons.done,
+              size: 30.0,
+              color: Colors.green,
+            ),
           ),
         ],
       ),
@@ -144,18 +146,21 @@ class _EditProfileState extends State<EditProfile> {
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+                        padding: EdgeInsets.only(
+                          top: 16.0,
+                          bottom: 8.0,
+                        ),
                         child: CircleAvatar(
+                          radius: 50.0,
                           backgroundImage:
                               CachedNetworkImageProvider(user.photoUrl),
-                          radius: 50.0,
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Column(
                           children: <Widget>[
-                            buildDisplaynameField(),
+                            buildDisplayNameField(),
                             buildBioField(),
                           ],
                         ),
@@ -163,16 +168,17 @@ class _EditProfileState extends State<EditProfile> {
                       RaisedButton(
                         onPressed: updateProfileData,
                         child: Text(
-                          'Update profile',
+                          "Update Profile",
                           style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold),
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
     );

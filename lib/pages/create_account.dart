@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttershare/widgets/header.dart';
 
@@ -14,11 +15,12 @@ class _CreateAccountState extends State<CreateAccount> {
 
   submit() {
     final form = _formKey.currentState;
+
     if (form.validate()) {
       form.save();
-      SnackBar snackbar = SnackBar(content: Text('Welcome $username!'));
+      SnackBar snackbar = SnackBar(content: Text("Welcome $username!"));
       _scaffoldKey.currentState.showSnackBar(snackbar);
-      Timer(Duration(seconds: 3), () {
+      Timer(Duration(seconds: 2), () {
         Navigator.pop(context, username);
       });
     }
@@ -29,7 +31,7 @@ class _CreateAccountState extends State<CreateAccount> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: header(context,
-          titleText: 'Setup your profile', removeBackButton: true),
+          titleText: "Set up your profile", removeBackButton: true),
       body: ListView(
         children: <Widget>[
           Container(
@@ -39,7 +41,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   padding: EdgeInsets.only(top: 25.0),
                   child: Center(
                     child: Text(
-                      'Create a username',
+                      "Create a username",
                       style: TextStyle(fontSize: 25.0),
                     ),
                   ),
@@ -48,25 +50,27 @@ class _CreateAccountState extends State<CreateAccount> {
                   padding: EdgeInsets.all(16.0),
                   child: Container(
                     child: Form(
-                        key: _formKey,
-                        child: TextFormField(
-                          autovalidate: true,
-                          validator: (val) {
-                            if (val.trim().length < 3 || val.isEmpty) {
-                              return "Username too short";
-                            } else if (val.trim().length > 12) {
-                              return "Username too long";
-                            } else
-                              return null;
-                          },
-                          onSaved: (val) => username = val,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Username',
-                            labelStyle: TextStyle(fontSize: 15.0),
-                            hintText: 'Must be at least 3 characters',
-                          ),
-                        )),
+                      key: _formKey,
+                      autovalidate: true,
+                      child: TextFormField(
+                        validator: (val) {
+                          if (val.trim().length < 3 || val.isEmpty) {
+                            return "Username too short";
+                          } else if (val.trim().length > 12) {
+                            return "Username too long";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onSaved: (val) => username = val,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Username",
+                          labelStyle: TextStyle(fontSize: 15.0),
+                          hintText: "Must be at least 3 characters",
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -80,7 +84,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     ),
                     child: Center(
                       child: Text(
-                        'Submit',
+                        "Submit",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 15.0,
